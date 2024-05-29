@@ -100,9 +100,43 @@ const printrows = (rows) => {
         console.log(rowString)
     }
 };
-let balance = deposit();
-const Lines = NumberofLinestoBetOn();
-const BetAmount = getBet(balance,Lines);
-const reels = spin();
-const rows = transpose(reels);
-printrows(rows);
+const getWinnings = (rows,bet,lines) =>{
+    let winnings = 0;
+    for(let i = 0;i<lines;i++){
+        const  symbols = rows[i];
+        let allSame = true;
+        for (const symbol of symbols){
+            if(symbol != symbols[0]){
+                allSame = false;
+                break;
+            }
+        }
+        if(allSame){
+            winnings += bet*SYMBOL_VALUES[symbols[0]]
+        }
+    }
+    return winnings
+};
+const game = () =>{
+    let balance = deposit();
+    while(true){
+        console.log("You have a balance of $"+balance)
+        const Lines = NumberofLinestoBetOn();
+        const BetAmount = getBet(balance,Lines);
+        balance -= BetAmount*Lines;
+        const reels = spin();
+        const rows = transpose(reels);
+        const winnings  = getWinnings(rows,BetAmount,Lines);
+        console.log("You won,$ " + winnings.toString())
+        printrows(rows);
+        if(balance<=0 ){
+            console.log("You ran out of amount!!!")
+            break;
+        }
+        const playAgain = prompt("Do you want to play again? (Y/N) : ");
+        if(playAgain!="Y"){
+            break;
+        }
+    }
+};
+game();
